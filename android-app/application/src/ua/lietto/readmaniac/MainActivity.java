@@ -1,19 +1,16 @@
 package ua.lietto.readmaniac;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.media.Image;
 import android.os.Bundle;
-import android.widget.ImageView;
+import android.text.method.ScrollingMovementMethod;
 import android.widget.TextView;
-import ebook.EBook;
-import ebook.parser.InstantParser;
-import ebook.parser.Parser;
+import android.widget.Toast;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.util.ArrayList;
 
 public class MainActivity extends Activity {
     /**
@@ -24,14 +21,31 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        InstantParser parser = new InstantParser();
+        TextView bookText = (TextView) findViewById(R.id.text);
+        bookText.setMovementMethod(ScrollingMovementMethod.getInstance());
 
-        EBook ebook = parser.parse("/storage/sdcard0/Books/06. Властелин Хаоса.fb2", true);
+        StringBuilder buf = new StringBuilder();
+        InputStream json = null;
+        try {
+            json = getAssets().open("books/Longlife.txt");
 
-        if (ebook.isOk) {
-           TextView.class.cast(findViewById(R.id.text)).setText(ebook.annotation);
-//            Bitmap bmp = BitmapFactory.decodeByteArray(ebook.cover, 0, ebook.cover.length);
-//            ImageView.class.cast(findViewById(R.id.imageView)).setImageBitmap(bmp);
+            BufferedReader in =
+                    new BufferedReader(new InputStreamReader(json, "UTF-8"));
+            String str;
+
+            while ((str = in.readLine()) != null) {
+                buf.append(str);
+            }
+
+            in.close();
+
+            bookText.setText(buf.toString());
+        } catch (IOException e) {
+            Toast.makeText(this, "Exception", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
         }
+
     }
+
+
 }
