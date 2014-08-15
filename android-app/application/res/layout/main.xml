@@ -14,7 +14,7 @@
             android:layout_weight="1"
             android:background="#ffffff"
 
-            android:ellipsize="end"
+            android:scrollbars="vertical"
             android:textColor="#000000"
             android:textSize="11pt"
             />

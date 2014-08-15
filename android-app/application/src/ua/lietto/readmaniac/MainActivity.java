@@ -22,6 +22,7 @@ public class MainActivity extends Activity {
     private TextView bookText;
     private String finalText;
     private int last = 0;
+    private boolean layoutRender;
 
     /**
      * Called when the activity is first created.
@@ -32,7 +33,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);
 
         bookText = (TextView) findViewById(R.id.text);
-        //bookText.setMovementMethod(ScrollingMovementMethod.getInstance());
+        bookText.setMovementMethod(ScrollingMovementMethod.getInstance());
 
         StringBuilder buf = new StringBuilder();
         InputStream json = null;
@@ -66,7 +67,7 @@ public class MainActivity extends Activity {
         bookText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int textViewWidth = bookText.getWidth();
+             /*   int textViewWidth = bookText.getWidth();
                 int numChars;
 
                 Paint paint = bookText.getPaint();
@@ -81,41 +82,63 @@ public class MainActivity extends Activity {
 
                 bookText.setText(finalText.substring(last, last  + line * lines));
 
-                last += line * lines;
+                last += line * lines;*/
             }
         });
 
+       layoutRender = false;
 
         ViewTreeObserver vto = bookText.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                int textViewWidth = bookText.getWidth();
-                int numChars;
+                if (!layoutRender) {
+                    layoutRender = true;
+                    int textViewWidth = bookText.getWidth();
+                    int numChars;
 
-                Paint paint = bookText.getPaint();
-                for (numChars = 1; numChars <= finalText.length(); ++numChars) {
-                    if (paint.measureText(finalText, 0, numChars) > textViewWidth) {
-                        break;
+                    Paint paint = bookText.getPaint();
+                    for (numChars = 1; numChars <= finalText.length(); ++numChars) {
+                        if (paint.measureText(finalText, 0, numChars) > textViewWidth) {
+                            break;
+                        }
                     }
-                }
 
-                int lines = Math.round(bookText.getHeight() / bookText.getLineHeight());
-                int line = (numChars - 1);
-
-
-                Log.e("Text", "Number of characters that fit = " + line);
-                Log.e("Text", "Number of characters that fit = " + lines);
-                bookText.setMaxLines(lines);
+                    int lines = Math.round(bookText.getHeight() / bookText.getLineHeight());
+                    int line = (numChars - 1);
 
 
+                    Log.e("Text", "Number of characters that fit = " + line);
+                    Log.e("Text", "Number of characters that fit = " + lines);
+                    bookText.setMaxLines(lines);
 
-
-
-
-                if (last == 0) {
+                /*if (last == 0) {
                     last += line * lines;
                     bookText.setText(finalText.substring(0, last));
+                }*/
+
+                    String[] linesArray = finalText.split("\n");
+
+                    Log.e("Text", "linesArray = " + linesArray.length);
+
+                    String fullText = "";
+
+                    StringBuilder newStr = new StringBuilder();
+
+                    for (String str : linesArray) {
+                        String reverse = new StringBuilder(str).reverse().toString();
+                        if (str.length() > line) {
+                            str =  new StringBuilder(reverse.replaceFirst("\\s", "\n")).reverse().toString();
+                        }
+
+                       newStr.append(str).append("\n");
+
+                    }
+
+                    bookText.setText(newStr.toString());
+
+
+
                 }
 
 
