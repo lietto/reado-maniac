@@ -1,6 +1,8 @@
 package ua.devhelp.activity;
 
 import android.app.Activity;
+import android.util.Log;
+import ua.devhelp.constants.DevLogSwitch;
 import ua.devhelp.logs.DevToast;
 import ua.devhelp.notifications.LookAtMe;
 
@@ -9,7 +11,7 @@ import ua.devhelp.notifications.LookAtMe;
  */
 public class ParentActivity extends Activity{
 
-
+    protected String TAG = this.getClass().getSimpleName();
 
     protected void showErrorDevToast(String text) {
         DevToast.context(this).showRed(text);
@@ -33,5 +35,32 @@ public class ParentActivity extends Activity{
 
     protected void showSuccessrToastToUser(String text) {
         LookAtMe.context(this).showGreen(text);
+    }
+
+    protected void printArrayLog(String... text) {
+        if (text!=null && DevLogSwitch.DEVELOPING) {
+            for (String str : text) {
+                Log.e(TAG, " --> " + str);
+            }
+        }
+
+    }
+
+    protected void printLineLog(String... text) {
+        if (text!=null && DevLogSwitch.DEVELOPING) {
+            String tmp = "";
+            for (String str : text) {
+               tmp += " " + str + " |";
+            }
+            Log.e(TAG, "<|--|" + tmp + "--|>");
+        }
+
+    }
+
+    protected void printSingleTextLog(String text) {
+        if (text!=null && DevLogSwitch.DEVELOPING) {
+                Log.e(TAG, "|__>  - " + text);
+        }
+
     }
 }
