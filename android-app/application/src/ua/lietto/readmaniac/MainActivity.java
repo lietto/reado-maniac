@@ -13,12 +13,14 @@ import android.widget.Toast;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+import ua.devhelp.activity.ParentActivity;
+import ua.devhelp.logs.DevToast;
 import ua.lietto.readmaniac.util.Utils;
 
 import java.io.*;
 import java.util.ArrayList;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ParentActivity {
     private TextView bookText;
     private String finalText;
     private int last = 0;
@@ -38,7 +40,10 @@ public class MainActivity extends Activity {
         StringBuilder buf = new StringBuilder();
         InputStream json = null;
 
+        showSuccessrToastToUser("Everything OK!!!");
+
         String text = "";
+
 
         try {
             json = getAssets().open("books/Longlife.txt");
