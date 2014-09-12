@@ -16,7 +16,7 @@
 
             android:scrollbars="vertical"
             android:textColor="#000000"
-            android:textSize="11pt"
+            android:textSize="9pt"
             />
     <TextView
             android:id="@+id/pages"

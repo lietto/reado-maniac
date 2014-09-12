@@ -10,12 +10,12 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
 import android.widget.Toast;
+import org.apache.commons.lang3.text.WordUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 import ua.devhelp.activity.ParentActivity;
 import ua.devhelp.logs.DevToast;
-import ua.lietto.readmaniac.util.Utils;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -25,6 +25,8 @@ public class MainActivity extends ParentActivity {
     private String finalText;
     private int last = 0;
     private boolean layoutRender;
+    private int lines;
+    private int line;
 
     /**
      * Called when the activity is first created.
@@ -35,12 +37,10 @@ public class MainActivity extends ParentActivity {
         setContentView(R.layout.main);
 
         bookText = (TextView) findViewById(R.id.text);
-        bookText.setMovementMethod(ScrollingMovementMethod.getInstance());
+       // bookText.setMovementMethod(ScrollingMovementMethod.getInstance());
 
         StringBuilder buf = new StringBuilder();
         InputStream json = null;
-
-        showSuccessrToastToUser("Everything OK!!!");
 
         String text = "";
 
@@ -60,34 +60,17 @@ public class MainActivity extends ParentActivity {
             in.close();
 
             text = buf.toString();
-
         } catch (IOException e) {
             Toast.makeText(this, "Exception", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
 
-     //   bookText.setText(text);
-
         finalText = text;
         bookText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-             /*   int textViewWidth = bookText.getWidth();
-                int numChars;
 
-                Paint paint = bookText.getPaint();
-                for (numChars = 1; numChars <= finalText.length(); ++numChars) {
-                    if (paint.measureText(finalText, 0, numChars) > textViewWidth) {
-                        break;
-                    }
-                }
-
-                int lines = Math.round(bookText.getHeight() / bookText.getLineHeight());
-                int line = (numChars - 1);
-
-                bookText.setText(finalText.substring(last, last  + line * lines));
-
-                last += line * lines;*/
+                bookText.setText(finalText.substring(bookText.getLayout().getLineEnd(lines - 1)));
             }
         });
 
@@ -109,20 +92,25 @@ public class MainActivity extends ParentActivity {
                         }
                     }
 
-                    int lines = Math.round(bookText.getHeight() / bookText.getLineHeight());
-                    int line = (numChars - 1);
-
+                    lines = Math.round(bookText.getHeight() / bookText.getLineHeight());
+                    line = (numChars - 1);
 
                     Log.e("Text", "Number of characters that fit = " + line);
-                    Log.e("Text", "Number of characters that fit = " + lines);
+                    Log.e("Text", "Number of lines that fit = " + lines);
                     bookText.setMaxLines(lines);
 
-                /*if (last == 0) {
-                    last += line * lines;
-                    bookText.setText(finalText.substring(0, last));
-                }*/
+                    finalText = finalText.replaceAll("(?m)^", "\t");
 
-                    String[] linesArray = finalText.split("\n");
+                    bookText.setText(finalText);
+
+                    showSuccessrToastToUser(bookText.getText().toString()
+                            .substring(
+                                    bookText.getLayout().getLineStart(lines - 1),
+                                    bookText.getLayout().getLineEnd(lines - 1)));
+
+//                    bookText.setText(WordUtils.wrap(finalText, line));
+
+                   /* String[] linesArray = finalText.split("\n");
 
                     Log.e("Text", "linesArray = " + linesArray.length);
 
@@ -140,7 +128,7 @@ public class MainActivity extends ParentActivity {
 
                     }
 
-                    bookText.setText(newStr.toString());
+                    bookText.setText(newStr.toString());*/
 
 
 

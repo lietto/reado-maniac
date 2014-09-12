@@ -8,6 +8,8 @@ import android.widget.Toast;
 import ua.devhelp.constants.DevLogSwitch;
 import ua.devhelp.logs.AppToast;
 
+import java.util.zip.CheckedOutputStream;
+
 /**
  * Created by lietto on 11.09.2014.
  */
@@ -72,6 +74,8 @@ public class LookAtMe extends AppToast {
                 new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         view.setLayoutParams(params);
+
+        view.setTextColor(Color.BLACK);
 
         toast.setView(view);
 
