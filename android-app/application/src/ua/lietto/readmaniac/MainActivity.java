@@ -16,17 +16,20 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 import ua.devhelp.activity.ParentActivity;
 import ua.devhelp.logs.DevToast;
+import ua.lietto.readmaniac.book.Book;
+import ua.lietto.readmaniac.book.BookFormat;
 
 import java.io.*;
 import java.util.ArrayList;
 
-public class MainActivity extends ParentActivity {
+public class MainActivity extends ParentActivity implements Book.OnRender {
     private TextView bookText;
     private String finalText;
     private int last = 0;
     private boolean layoutRender;
     private int lines;
     private int line;
+    private Book book;
 
     /**
      * Called when the activity is first created.
@@ -39,45 +42,28 @@ public class MainActivity extends ParentActivity {
         bookText = (TextView) findViewById(R.id.text);
        // bookText.setMovementMethod(ScrollingMovementMethod.getInstance());
 
-        StringBuilder buf = new StringBuilder();
-        InputStream json = null;
-
-        String text = "";
-
-
         try {
-            json = getAssets().open("books/Longlife.txt");
-
-            BufferedReader in =
-                    new BufferedReader(new InputStreamReader(json, "UTF-8"));
-            String str;
-
-            while ((str = in.readLine()) != null) {
-                buf.append(str);
-                buf.append("\n");
-            }
-
-            in.close();
-
-            text = buf.toString();
+            book = new Book.Builder()
+                    .addTextView(bookText)
+                    .setBookSource(BookFormat.txt, getAssets().open("books/Longlife.txt")).create(this);
         } catch (IOException e) {
-            Toast.makeText(this, "Exception", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
 
-        finalText = text;
+
         bookText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                bookText.setText(finalText.substring(bookText.getLayout().getLineEnd(lines - 1)));
+               // bookText.setText(finalText.substring(bookText.getLayout().getLineEnd(lines - 1)));
             }
         });
 
        layoutRender = false;
 
         ViewTreeObserver vto = bookText.getViewTreeObserver();
-        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+     /*   vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 if (!layoutRender) {
@@ -110,7 +96,7 @@ public class MainActivity extends ParentActivity {
 
 //                    bookText.setText(WordUtils.wrap(finalText, line));
 
-                   /* String[] linesArray = finalText.split("\n");
+                    String[] linesArray = finalText.split("\n");
 
                     Log.e("Text", "linesArray = " + linesArray.length);
 
@@ -128,7 +114,7 @@ public class MainActivity extends ParentActivity {
 
                     }
 
-                    bookText.setText(newStr.toString());*/
+                    bookText.setText(newStr.toString());
 
 
 
@@ -136,14 +122,27 @@ public class MainActivity extends ParentActivity {
 
 
             }
-        });
+        });*/
 
 
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        if (book != null) {
+            book.finish();
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
+
+    }
+
+    @Override
+    public void renderTextViewFinish() {
 
     }
 }
