@@ -5,6 +5,6 @@ package ua.lietto.readmaniac.book;
  */
 public enum  BookFormat {
 
-    txt
+    txt, fb2
 
 }

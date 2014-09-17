@@ -1,9 +1,9 @@
-package ua.devhelp.constants;
+package ua.lietto.devhelp.constants;
 
 /**
  * Created by lietto on 11.09.2014.
  */
-public class DevLogSwitch {
+public class DevLogSwitcher {
 
     public static final boolean DEVELOPING = true;
 

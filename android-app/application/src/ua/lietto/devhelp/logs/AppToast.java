@@ -1,4 +1,4 @@
-package ua.devhelp.logs;
+package ua.lietto.devhelp.logs;
 
 import android.content.Context;
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/action_txt"
+          android:icon="@android:drawable/stat_notify_sdcard_usb"
+          android:showAsAction="always"
+          android:title="file"
+            />
+
+    <item android:id="@+id/action_fb2"
+          android:icon="@android:drawable/ic_menu_add"
+          android:showAsAction="always"
+          android:title="fb2"
+            />
+</menu>

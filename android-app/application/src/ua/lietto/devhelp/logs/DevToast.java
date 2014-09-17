@@ -1,11 +1,11 @@
-package ua.devhelp.logs;
+package ua.lietto.devhelp.logs;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-import ua.devhelp.constants.DevLogSwitch;
+import ua.lietto.devhelp.constants.DevLogSwitcher;
 
 /**
  * Created by lietto on 11.09.2014.
@@ -26,7 +26,7 @@ public class DevToast extends AppToast{
     }
 
    public void showRed(String text) {
-        if (DevLogSwitch.DEVELOPING && context != null) {
+        if (DevLogSwitcher.DEVELOPING && context != null) {
             Toast toast = getToast(text);
 
             toast.getView().setBackgroundColor(Color.RED);
@@ -36,7 +36,7 @@ public class DevToast extends AppToast{
     }
 
     public void showYellow(String text) {
-        if (DevLogSwitch.DEVELOPING && context != null) {
+        if (DevLogSwitcher.DEVELOPING && context != null) {
             Toast toast = getToast(text);
 
             toast.getView().setBackgroundColor(Color.YELLOW);
@@ -48,7 +48,7 @@ public class DevToast extends AppToast{
     }
 
     public void showGreen(String text) {
-        if (DevLogSwitch.DEVELOPING && context != null) {
+        if (DevLogSwitcher.DEVELOPING && context != null) {
             Toast toast = getToast(text);
 
             toast.getView().setBackgroundColor(Color.GREEN);
