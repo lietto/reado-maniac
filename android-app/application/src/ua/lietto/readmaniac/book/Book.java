@@ -4,12 +4,16 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
+import android.text.Html;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.text.translate.UnicodeEscaper;
 import org.mozilla.universalchardet.UniversalDetector;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
+import ua.lietto.devhelp.logs.DevToast;
 import ua.lietto.devhelp.utils.ApplicationUtil;
 import ua.lietto.readmaniac.constants.PrefKey;
 import ua.lietto.devhelp.logs.SMTL;
@@ -24,16 +28,21 @@ import java.util.List;
  */
 public class Book {
 
+    private final OnRender listener;
     private BookFormat format;
     private TextView textView;
-    private String text;
+    private String bookText;
+    //private String text;
     private ViewTreeObserver.OnGlobalLayoutListener globalLayoutListener;
     private boolean layoutRender = false;
     private List<int[]> pages;
     private int lines;
     private int currentPage = 0;
+    private int currentSection = 0;
+    private ArrayList<String> sections;
 
-    public Book() {
+    public Book(OnRender listener) {
+        this.listener = listener;
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -82,51 +91,6 @@ public class Book {
         }
     }
 
-    private String wrapFb2Book(InputStream input) throws XmlPullParserException {
-
-        try {
-
-            BufferedInputStream is = new BufferedInputStream(input);
-            is.mark(is.available());
-
-            String encoding = AppUtil.getFileEncoding(is);
-
-            is.reset();
-
-
-            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-            factory.setNamespaceAware(true);
-            XmlPullParser xpp = factory.newPullParser();
-
-            xpp.setInput(is, encoding);
-
-            int eventType = xpp.getEventType();
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                String name=xpp.getName();
-                switch (eventType){
-                    case XmlPullParser.START_TAG:
-                        break;
-                    case XmlPullParser.END_TAG:
-                        if(name.equals("genre")){
-
-                            SMTL.log().printSingleTextLog("Text " + xpp.getAttributeValue(null,"value"));
-                        }
-                        break;
-                }
-                eventType = xpp.next();
-            }
-
-            text = "";
-
-            return text;
-
-        } catch (IOException e) {
-            e.printStackTrace();
-
-            return "";
-        }
-    }
-
     public void goPageForward() {
 
         if (currentPage + 1 < getBookCapacity()) {
@@ -145,8 +109,16 @@ public class Book {
         }
     }
 
+    public void setText(String text) {
+
+    }
+
     public int getBookCapacity() {
         return pages.size();
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
     }
 
     public int getCurrentPage() {
@@ -154,7 +126,11 @@ public class Book {
     }
 
     public String getCurrentPageText() {
-        return text.substring(pages.get(currentPage)[0], pages.get(currentPage)[1]);
+        return sections.get(currentSection).substring(pages.get(currentPage)[0], pages.get(currentPage)[1]);
+    }
+
+    public String getPageText(int page) {
+        return sections.get(currentSection).substring(pages.get(page)[0], pages.get(page)[1]);
     }
 
     public List<int[]> getPages() {
@@ -185,8 +161,8 @@ public class Book {
 
         private Book book;
 
-        public Builder() {
-            book = new Book();
+        public Builder(OnRender l) {
+            book = new Book(l);
         }
 
         public Builder addTextView(TextView view) {
@@ -197,16 +173,9 @@ public class Book {
         public Builder setBookSource(BookFormat f, InputStream asset) {
             book.format = f;
             switch (f) {
-                case txt:
-                    book.text = book.wrapTextBook(asset);
-                    break;
                 case fb2:
-                    try {
-                        book.text = book.wrapFb2Book(asset);
-                    } catch (XmlPullParserException e) {
-                        e.printStackTrace();
-                        book.text = "";
-                    }
+                case txt:
+                    book.bookText = book.wrapTextBook(asset);
                     break;
             }
             return this;
@@ -216,17 +185,16 @@ public class Book {
             return book;
         }
 
-        ;
 
-        public Book createOnChoose(final OnRender listener) {
+        public Book createOnChoose() {
 
             create();
 
-            listener.renderTextViewFinish();
+            book.listener.renderTextViewFinish();
             return book;
         }
 
-        public Book createOnStart(final OnRender listener) {
+        public Book createOnStart() {
 
 
             book.globalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -238,7 +206,7 @@ public class Book {
 
                         create();
 
-                        listener.renderTextViewFinish();
+                        book.listener.renderTextViewFinish();
 
                     }
 
@@ -259,7 +227,43 @@ public class Book {
 
             book.textView.setMaxLines(book.lines);
 
-            book.textView.setText(book.text);
+            book.sections = new ArrayList<String>();
+
+            if (book.format.equals(BookFormat.fb2)) {
+//                book.text = book.text.substring(
+//                        book.text.indexOf("<body>"),
+//                        book.text.indexOf("</body>") + 6);
+//
+//                book.text = Html.fromHtml(book.text).toString();
+
+//                book.text = book.text.replaceAll("(?m)^", "\t\t");
+
+                String[] s = book.bookText.split("<section>");
+
+                for (int i = 1; i < s.length; i++) {
+                    book.sections.add(s[i].split("</section>")[0].replaceAll("<p>", "<strong>").replaceAll("</p>", "</strong>"));
+                }
+
+                s = null;
+
+
+                // book.text = book.text.replaceAll("\n", "");
+
+                // book.text = Html.fromHtml(book.text).toString();
+
+                //   book.text = book.text.replaceAll("\n\n", "\n");
+
+                //   book.text = book.text.replaceAll("(?m)^", "\t\t");
+
+                //   book.text = book.text.replaceAll("\n\t\t\t", "");
+                //  book.text = StringEscapeUtils.escapeJava(book.text);
+            } else {
+                book.sections.add(book.bookText);
+            }
+
+            book.bookText = null;
+
+            book.textView.setText(Html.fromHtml(book.sections.get(0)));
 
             book.pages = new ArrayList<int[]>();
 
@@ -267,28 +271,26 @@ public class Book {
 
             book.pages.add(new int[]{0, book.textView.getLayout().getLineEnd(pageEnd)});
 
-            if (!book.text.equals(""))
-            while (true) {
-                try {
+            pageEnd = book.lines * (book.pages.size() + 1) - 1;
 
-//                    if (book.pages.size() == 500)
-//                        break;
+            for (int i = 0; i < book.textView.getLayout().getLineCount() - 1; i++) {
 
+                if (i == pageEnd) {
                     book.pages.add(new int[]{
-                            book.textView.getLayout().getLineEnd(pageEnd),
-                            book.textView.getLayout().getLineEnd(book.lines * (book.pages.size() + 1) - 1)
+                            book.textView.getLayout().getLineStart(pageEnd - book.lines),
+                            book.textView.getLayout().getLineEnd(pageEnd)
                     });
-                    pageEnd = book.lines * (book.pages.size()) - 1;
-                } catch (IndexOutOfBoundsException e) {
 
-                    book.pages.add(new int[]{
-                            book.textView.getLayout().getLineEnd(pageEnd), book.text.length() - 1});
-
-                    break;
+                    pageEnd = book.lines * (book.pages.size() + 1) - 1;
                 }
             }
 
-            book.textView.setText(book.getCurrentPageText());
+            book.pages.add(new int[]{
+                    book.textView.getLayout().getLineStart(pageEnd - book.lines),
+                    book.sections.get(0).length() - 1
+            });
+
+            //book.textView.setText(book.getCurrentPageText());
 
             SMTL.log(this).printValue("pages.size()", book.pages.size());
 

@@ -47,7 +47,7 @@ public class SMTL {
 
     public void printValue(String name, Object value) {
         if (DevLogSwitcher.DEVELOPING) {
-                Log.e(TAG, " Print Value\n -- name: " + name + "\n -- value: " + value);
+                Log.e(TAG, " Print Value\n -- " + name + " : " + value);
 
         }
 

@@ -9,6 +9,7 @@ public class Fb2Book {
     private String genre;
     private String authorFirstName;
     private String authorLastName;
+    private String annotation;
 
     public String getTitle() {
         return title;
@@ -40,5 +41,13 @@ public class Fb2Book {
 
     public void setAuthorLastName(String authorLastName) {
         this.authorLastName = authorLastName;
+    }
+
+    public String getAnnotation() {
+        return annotation;
+    }
+
+    public void setAnnotation(String annotation) {
+        this.annotation = annotation;
     }
 }

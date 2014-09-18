@@ -33,14 +33,16 @@ public class BookActivity extends ParentActivity implements Book.OnRender {
         bookText = (TextView) findViewById(R.id.text);
         // bookText.setMovementMethod(ScrollingMovementMethod.getInstance());
 
+
+
         getActionBar().setHomeButtonEnabled(true);
 
         try {
             showProgressDialog();
-            book = new Book.Builder()
+            book = new Book.Builder(this)
                     .addTextView(bookText)
 //                    .setBookSource(BookFormat.txt, getAssets().open("books/Longlife.txt")).createOnStart(this);
-                    .setBookSource(BookFormat.fb2, getAssets().open("books/Fire.fb2")).createOnStart(this);
+                    .setBookSource(BookFormat.fb2, getAssets().open("books/Fire.fb2")).createOnStart();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -86,10 +88,10 @@ public class BookActivity extends ParentActivity implements Book.OnRender {
                     // Get the path
                     try {
                         showProgressDialog();
-                        book = new Book.Builder()
+                        book = new Book.Builder(this)
                                 .addTextView(bookText)
                                 .setBookSource(BookFormat.txt,
-                                        new FileInputStream(new File(uri.getPath()))).createOnChoose(this);
+                                        new FileInputStream(new File(uri.getPath()))).createOnChoose();
 
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
@@ -106,7 +108,8 @@ public class BookActivity extends ParentActivity implements Book.OnRender {
     @Override
     public void renderTextViewFinish() {
        hideProgressDialog();
-      //  bookText.setText(book.getPages().get(book.getLocalSavedPageNumber(this)));
+//        book.setCurrentPage(80);
+//       bookText.setText(book.getCurrentPageText());
     }
 
     @Override
@@ -137,7 +140,7 @@ public class BookActivity extends ParentActivity implements Book.OnRender {
 
         MenuItem itemFb2 = menu.findItem(R.id.action_fb2);
 
-        itemTxt.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+        itemFb2.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
