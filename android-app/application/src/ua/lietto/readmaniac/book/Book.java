@@ -294,10 +294,6 @@ public class Book {
 
             SMTL.log(this).printValue("pages.size()", book.pages.size());
 
-
         }
-
     }
-
-
 }
