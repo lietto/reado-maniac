@@ -1,0 +1,3 @@
+[submodule "android-app/bugfree-adventure"]
+	path = android-app/bugfree-adventure
+	url = https://github.com/lietto/bugfree-adventure.git
