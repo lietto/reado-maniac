@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
 import android.widget.TextView;
-import ua.lietto.devhelp.activity.ParentActivity;
+import ua.bugfreeadventure.activity.ParentActivity;
 import ua.lietto.readmaniac.book.Book;
 import ua.lietto.readmaniac.book.BookFormat;
 
